@@ -30,7 +30,7 @@ WHEELHOUSE=$HOME/wheelhouse
 mkdir -p $WHEELHOUSE
 # Current version 0.7.4 seems to be broken with python3.7 .
 # See https://travis-ci.org/BhallaLab/deploy/jobs/435219820
-sudo /usr/local/bin/python -m pip install delocate virtualenv
+sudo /usr/local/bin/python3 -m pip install delocate virtualenv
 sudo /usr/local/bin/python3 -m pip install delocate virtualenv
 DELOCATE_WHEEL=/usr/local/bin/delocate-wheel
 
