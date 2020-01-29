@@ -19,7 +19,7 @@ mkdir -p $WHEELHOUSE
 
 # tag on github and revision number. Make sure that they are there.
 BRANCH=$(cat ./BRANCH)
-VERSION="3.2.0.dev$(date +%Y%m%d)"
+VERSION="$(cat VERSION)"
 
 echo "Building version $REVISION, from branch $BRANCH"
 
