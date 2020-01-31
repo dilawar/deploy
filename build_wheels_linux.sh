@@ -5,7 +5,7 @@ set -x
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 NPROC=$(cat /proc/cpuinfo | awk '/^processor/{print $3}' | wc -l)
-NUM_WORKERS=$((NPROC/2))
+NUM_WORKERS=$((NPROC-1))
 
 if [ "$TRAVIS" == "true" ]; then
     NUM_WORKERS=2
@@ -18,13 +18,13 @@ echo "Path to store wheels : $WHEELHOUSE"
 mkdir -p $WHEELHOUSE
 
 # tag on github and revision number. Make sure that they are there.
+[ -f ./BRANCH ] || echo "master" > ./BRANCH
 BRANCH=$(cat ./BRANCH)
 VERSION="3.2.0.dev$(date +%Y%m%d)"
 
 echo "Building version $REVISION, from branch $BRANCH"
 
 if [ ! -f /usr/local/lib/libgsl.a ]; then 
-    #wget --no-check-certificate ftp://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz 
     curl -O https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz
     tar xvf gsl-2.4.tar.gz 
     cd gsl-2.4 
@@ -36,46 +36,40 @@ fi
 MOOSE_SOURCE_DIR=$SCRIPT_DIR/moose-core
 
 if [ ! -d $MOOSE_SOURCE_DIR ]; then
-    git clone https://github.com/BhallaLab/moose-core --depth 10 --branch $BRANCH
+    git clone https://github.com/dilawar/moose-core --depth 10 --branch $BRANCH
 fi
 
-# Try to link statically.
+# GSL will be linked statically.
 GSL_STATIC_LIBS="/usr/local/lib/libgsl.a;/usr/local/lib/libgslcblas.a"
-CMAKE=/usr/bin/cmake3
+
+PY2=/opt/python/cp27-cp27m/bin/python2.7
+$PY2 -m pip install numpy==1.14 matplotlib==2.2.4
+
+PY3=/opt/python/cp38-cp38/bin/python3.8
+$PY3 -m pip install numpy matplotlib
 
 # Build wheels here.
-for PYV in 36 27; do
-    PYDIR=/opt/python/cp${PYV}-cp${PYV}m
-    PYVER=$(basename $PYDIR)
-    mkdir -p $PYVER
-    (
-        cd $PYVER
-        echo "Building using $PYDIR in $PYVER"
-        PYTHON=$(ls $PYDIR/bin/python?.?)
-        if [ "$PYV" -eq 27 ]; then
-            $PYTHON -m pip install numpy==1.15
-            $PYTHON -m pip install matplotlib==2.2.3
-        else
-            $PYTHON -m pip install numpy twine
-            $PYTHON -m pip install matplotlib
-        fi
-        $PYTHON -m pip install twine
-        $PYTHON -m pip uninstall pymoose -y || echo "No pymoose"
-	git pull || echo "Failed to pull $BRANCH"
-        $CMAKE -DPYTHON_EXECUTABLE=$PYTHON  \
-            -DGSL_STATIC_LIBRARIES=$GSL_STATIC_LIBS \
-            -DVERSION_MOOSE=$VERSION \
-            ${MOOSE_SOURCE_DIR}
-        make  $MAKEOPTS
-        
-        # Now build bdist_wheel
-        cd python
-        cp setup.cmake.py setup.py
-        $PYTHON -m pip wheel . -w $WHEELHOUSE 
-        echo "Content of WHEELHOUSE"
-        ls -lh $WHEELHOUSE/*.whl
-    )
+for PY in $PY3 $PY2; do
+  (
+  BUILDIR=$(basename $PY)
+  mkdir -p $BUILDIR
+  cd $BUILDIR
+  echo "Building using in $PY"
+  git pull || echo "Failed to pull $BRANCH"
+  cmake -DPYTHON_EXECUTABLE=$PY  \
+    -DGSL_STATIC_LIBRARIES=$GSL_STATIC_LIBS \
+    -DVERSION_MOOSE=$VERSION ${MOOSE_SOURCE_DIR}
+  make  $MAKEOPTS
+  # Now build bdist_wheel
+  cd python
+  cp setup.cmake.py setup.py
+  $PY -m pip wheel . -w $WHEELHOUSE 
+  echo "Content of WHEELHOUSE"
+  ls -lh $WHEELHOUSE/*.whl
+  )
 done
+
+$PY3 -m pip install twine auditwheel
 
 # List all wheels.
 ls -lh $WHEELHOUSE/*.whl
@@ -86,10 +80,9 @@ for whl in $WHEELHOUSE/pymoose*.whl; do
 done
 
 echo "Installing before testing ... "
-/opt/python/cp27-cp27m/bin/pip install $WHEELHOUSE/pymoose-$VERSION-py2-none-any.whl
-/opt/python/cp36-cp36m/bin/pip install $WHEELHOUSE/pymoose-$VERSION-py3-none-any.whl
-for PYV in 36 27; do
-    PYDIR=/opt/python/cp${PYV}-cp${PYV}m
-    PYTHON=$(ls $PYDIR/bin/python?.?)
-    $PYTHON -c 'import moose; print( moose.__version__ )'
+$PY2 -m pip install $WHEELHOUSE/pymoose-$VERSION-py2-none-any.whl
+$PY3 -m pip install $WHEELHOUSE/pymoose-$VERSION-py3-none-any.whl
+
+for PY in $PY3 $PY2; do
+    $PY -c 'import moose; print(moose.__version__)'
 done
