@@ -10,6 +10,6 @@ WORKDIR /root
 RUN curl -O https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz && \
   tar xvf gsl*.tar.gz && \
   cd gsl* && CFLAGS=-fPIC ./configure --enable-static && make $MAKEOPTS && make install 
-RUN git clone https://github.com/dilawar/moose-core --depth 100
-COPY . /root/deploy
+COPY build_wheels_linux.sh .
+# RUN ./build_wheels_linux.sh
 CMD [ "bash" ]

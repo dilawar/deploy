@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e -x -u
+set -e -x
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 NPROC=$(cat /proc/cpuinfo | awk '/^processor/{print $3}' | wc -l)
@@ -45,21 +45,16 @@ fi
 CMAKE=/usr/bin/cmake3
 
 # Build wheels here.
-for PYV in 38 36 27; do
-    PYDIR=/opt/python/cp${PYV}-cp${PYV}m
+for PYV in 38 37m 36m; do
+    PYDIR=/opt/python/cp${PYV}-cp${PYV}
     PYVER=$(basename $PYDIR)
     mkdir -p $PYVER
     (
         cd $PYVER
         echo "Building using $PYDIR in $PYVER"
         PYTHON=$(ls $PYDIR/bin/python?.?)
-        if [ "$PYV" -eq 27 ]; then
-            $PYTHON -m pip install numpy==1.15
-            $PYTHON -m pip install matplotlib==2.2.3
-        else
-            $PYTHON -m pip install numpy twine
-            $PYTHON -m pip install matplotlib
-        fi
+        $PYTHON -m pip install numpy twine
+        $PYTHON -m pip install matplotlib
         $PYTHON -m pip install twine
         $PYTHON -m pip uninstall pymoose -y || echo "No pymoose"
 	git pull || echo "Failed to pull $BRANCH"
@@ -87,10 +82,11 @@ for whl in $WHEELHOUSE/pymoose*.whl; do
 done
 
 echo "Installing before testing ... "
-/opt/python/cp27-cp27m/bin/pip install $WHEELHOUSE/pymoose-$VERSION-py2-none-any.whl
-/opt/python/cp36-cp36m/bin/pip install $WHEELHOUSE/pymoose-$VERSION-py3-none-any.whl
-/opt/python/cp38-cp38m/bin/pip install $WHEELHOUSE/pymoose-$VERSION-py3-none-any.whl
-for PYV in 38 36 27; do
+
+/opt/python/cp36-cp36/bin/pip install $WHEELHOUSE/pymoose-$VERSION-py3-none-any.whl
+/opt/python/cp38-cp38/bin/pip install $WHEELHOUSE/pymoose-$VERSION-py3-none-any.whl
+for PYV in 38 36; do
+    /opt/python/cp${PYV}-cp${PYV}/bin/pip install $WHEELHOUSE/pymoose-$VERSION-py3-none-any.whl
     PYDIR=/opt/python/cp${PYV}-cp${PYV}
     PYTHON=$(ls $PYDIR/bin/python?.?)
     $PYTHON -c 'import moose; print(moose.__version__)'
