@@ -5,12 +5,8 @@ ARG PYPI_PASSWORD
 
 MAINTAINER Dilawar Singh <dilawar.s.rajput@gmail.com>
 ENV PATH=/usr/local/bin:$PATH
-RUN yum update -y
-RUN yum install -y cmake3
-RUN yum install -y wget  
-RUN wget https://github.com/BhallaLab/deploy/archive/master.tar.gz 
-RUN ls -la *.gz
-RUN tar xvf master.tar.gz
-RUN cd deploy-master && ./build_wheels_linux.sh 
-RUN echo "pass $PYPI_PASSWORD"
-RUN cd deploy-master && ./test_and_upload.sh "$PYPI_PASSWORD"
+RUN yum install -y cmake3 wget vim
+COPY ./build_wheels_linux.sh /opt/build_wheels_linunx.sh
+RUN curl -O https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz
+RUN curl -O https://github.com/BhallaLab/deploy/archive/master.tar.gz 
+CMD bash
