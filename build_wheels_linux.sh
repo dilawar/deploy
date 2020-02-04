@@ -41,7 +41,7 @@ fi
 
 # Try to link statically.
 GSL_STATIC_LIBS="/usr/local/lib/libgsl.a;/usr/local/lib/libgslcblas.a"
-CMAKE=/usr/bin/cmake28
+CMAKE=/usr/bin/cmake3
 
 # Build wheels here.
 for PYV in 36 27; do
