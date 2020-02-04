@@ -36,7 +36,9 @@ fi
 MOOSE_SOURCE_DIR=$SCRIPT_DIR/moose-core
 
 if [ ! -d $MOOSE_SOURCE_DIR ]; then
-    git clone https://github.com/BhallaLab/moose-core --depth 10 --branch $BRANCH
+  git clone https://github.com/BhallaLab/moose-core --depth 10 --branch $BRANCH
+else
+  cd moose-core && git pull origin $BRANCH
 fi
 
 # Try to link statically.
