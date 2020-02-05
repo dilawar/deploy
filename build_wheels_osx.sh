@@ -1,21 +1,16 @@
 #!/bin/bash
-set -e 
-set -x
+set -e  -x
 
 BRANCH=$(cat ./BRANCH)
-VERSION=3.2.0.dev$(date +%Y%m%d)
+VERSION=3.1.5
 
 # Just to be sure on homebrew.
 export PATH=/usr/local/bin:$PATH
 
 brew update || echo "Failed to update brew"
 brew install gsl  || brew upgrade gsl 
-brew upgrade python3 || echo "Failed to upgrade python3"
-brew upgrade python2 || echo "Failed to upgrade python2"
-brew upgrade python || echo "Failed to upgrade python"
-
-# Following are to remove numpy; It is breaking the build on Xcode9.4.
-brew uninstall gdal postgis || echo "Failed to uninstall gdal/postgis"
+brew upgrade python@3 || echo "Failed to upgrade python3"
+brew upgrade python@2 || echo "Failed to upgrade python2"
 brew uninstall numpy || echo "Failed to uninstall numpy"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -45,7 +40,13 @@ for _py in 3 2; do
 
     $PYTHON -m pip install setuptools --upgrade --user
     $PYTHON -m pip install wheel --upgrade --user
-    $PYTHON -m pip install numpy --upgrade --user
+    if [[ "$_py" -eq "2" ]]; then
+      echo "Building for Python2"
+      $PYTHON -m pip install numpy==1.16 --upgrade --user
+    else
+      echo "Building for Python3"
+      $PYTHON -m pip install numpy --upgrade --user
+    fi
     $PYTHON -m pip install twine  --upgrade  --user
 
     PLATFORM=$($PYTHON -c "import distutils.util; print(distutils.util.get_platform())")
