@@ -22,7 +22,7 @@ TESTFILE=/tmp/test.py
 cat <<EOF >$TESTFILE
 import moose
 import moose.utils as mu
-print( moose.__version__ )
+print( moose.version() )
 moose.reinit()
 moose.start( 1 )
 EOF
@@ -51,16 +51,17 @@ fi
 
 # Try to link statically.
 GSL_STATIC_LIBS="/usr/local/lib/libgsl.a;/usr/local/lib/libgslcblas.a"
-CMAKE=/usr/bin/cmake3
+rm -rf /usr/bin/cmake || echo "Remove cmake2.8"
+cp /usr/bin/cmake3 /usr/bin/cmake
 
 # Build wheels here.
 PY27=$(ls /opt/python/cp27-cp27m/bin/python?.?)
-PY35=$(ls /opt/python/cp35-cp35m/bin/python?.?)
 PY36=$(ls /opt/python/cp36-cp36m/bin/python?.?)
 PY37=$(ls /opt/python/cp37-cp37m/bin/python?.?)
 PY38=$(ls /opt/python/cp38-cp38/bin/python?.?)
+PY39=$(ls /opt/python/cp39-cp39/bin/python?.?)
 
-for PYTHON in $PY38 $PY37 $PY36 $PY35 $PY27; do
+for PYTHON in $PY38 $PY37 $PY36 $PY27; do
   echo "========= Building using $PYTHON ..."
   $PYTHON -m pip install pip setuptools --upgrade
   if [[ "$PYV" -eq "27" ]]; then
