@@ -54,31 +54,42 @@ if [ ! -d $MOOSE_SOURCE_DIR ]; then
     git clone https://github.com/dilawar/moose-core --depth 10 --branch $BRANCH
 fi
 
-
-PY2=/opt/python/cp27-cp27m/bin/python2.7
-$PY2 -m pip install numpy==1.14 matplotlib==2.2.4
-
-PY3=/opt/python/cp38-cp38/bin/python3.8
-$PY3 -m pip install numpy matplotlib
+# Try to link statically.
+GSL_STATIC_LIBS="/usr/local/lib/libgsl.a;/usr/local/lib/libgslcblas.a"
 
 # Build wheels here.
-for PY in $PY3 $PY2; do
-  (
-  BUILDIR=$(basename $PY)
-  mkdir -p $BUILDIR
-  cd $BUILDIR
-  echo "Building using in $PY"
-  git pull || echo "Failed to pull $BRANCH"
-  cmake -DPYTHON_EXECUTABLE=$PY  \
-    -DGSL_STATIC_LIBRARIES=$GSL_STATIC_LIBS \
-    -DVERSION_MOOSE=$VERSION ${MOOSE_SOURCE_DIR}
-  make  $MAKEOPTS
-  # Now build bdist_wheel
-  cd python
-  cp setup.cmake.py setup.py
-  $PY -m pip wheel . -w $WHEELHOUSE 
-  echo "Content of WHEELHOUSE"
-  ls -lh $WHEELHOUSE/*.whl
+#PY27=$(ls /opt/python/cp27-cp27m/bin/python?.?)
+#PY35=$(ls /opt/python/cp35-cp35m/bin/python?.?)
+PY36=$(ls /opt/python/cp36-cp36m/bin/python?.?)
+PY37=$(ls /opt/python/cp37-cp37m/bin/python?.?)
+PY38=$(ls /opt/python/cp38-cp38/bin/python?.?)
+
+# install latest cmake using pip and its location to PATH
+$PY38 -m pip install cmake --user
+export PATH=/opt/python/cp38-cp38/bin:$PATH
+
+for PYTHON in $PY38 $PY37 $PY36; do
+  echo "========= Building using $PYTHON ..."
+  $PYTHON -m pip install pip setuptools --upgrade
+  $PYTHON -m pip install numpy twine
+  $PYTHON -m pip install matplotlib
+  $PYTHON -m pip install twine
+  # Removing existing pymoose if any.
+  $PYTHON -m pip uninstall pymoose -y || echo "No pymoose"
+
+  cd $MOOSE_SOURCE_DIR
+  export GSL_USE_STATIC_LIBRARIES=1
+  $PYTHON setup.py build_ext 
+  $PYTHON setup.py bdist_wheel --skip-build 
+  ( 
+      echo "Install and test this wheel"
+      # NOTE: Not sure why I have to do this. But cant install wheel from build
+      # directory.
+      cd /tmp
+      $PYTHON -m pip install $MOOSE_SOURCE_DIR/dist/*.whl 
+      $PYTHON $TESTFILE
+      mv $MOOSE_SOURCE_DIR/dist/*.whl $WHEELHOUSE
+      rm -rf $MOOSE_SOURCE_DIR/dist/*.whl
   )
 done
 
