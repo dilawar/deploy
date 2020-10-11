@@ -8,7 +8,7 @@ wheels : ./Dockerfile ./build_wheels_linux.sh
 	    --build-arg PYPI_PASSWORD=$(PYPI_PASSWORD) . 
 
 run : ./Dockerfile
-	docker run -it $(DOCKERFILE) bash
+	docker run -it quay.io/pypa/manylinux2010_x86_64
 
 upload: 
 	docker push $(DOCKERFILE)

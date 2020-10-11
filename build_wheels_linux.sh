@@ -58,8 +58,6 @@ fi
 GSL_STATIC_LIBS="/usr/local/lib/libgsl.a;/usr/local/lib/libgslcblas.a"
 
 # Build wheels here.
-#PY27=$(ls /opt/python/cp27-cp27m/bin/python?.?)
-#PY35=$(ls /opt/python/cp35-cp35m/bin/python?.?)
 PY36=$(ls /opt/python/cp36-cp36m/bin/python?.?)
 PY37=$(ls /opt/python/cp37-cp37m/bin/python?.?)
 PY38=$(ls /opt/python/cp38-cp38/bin/python?.?)
@@ -93,7 +91,7 @@ for PYTHON in $PY38 $PY37 $PY36; do
   )
 done
 
-$PY3 -m pip install twine auditwheel
+$PY38 -m pip install twine auditwheel
 
 # List all wheels.
 ls -lh $WHEELHOUSE/*.whl
@@ -106,10 +104,9 @@ for whl in $WHEELHOUSE/pymoose*.whl; do
 done
 
 echo "Installing before testing ... "
-$PY2 -m pip install $WHEELHOUSE/pymoose-$VERSION-py2-none-any.whl
-$PY3 -m pip install $WHEELHOUSE/pymoose-$VERSION-py3-none-any.whl
+$PY38 -m pip install $WHEELHOUSE/pymoose-$VERSION-py3-none-any.whl
 
-for PY in $PY3 $PY2; do
+for PY in $PY38; do
     $PY -c 'import moose; print(moose.__version__)'
 done
 
