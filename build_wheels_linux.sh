@@ -114,6 +114,6 @@ done
 cd $MOOSE_SOURCE_DIR 
 rm -rf dist
 $PY38 setup.py sdist 
-$TWINE upload dist/pymoose*.tar.gz \
-  --user bhallalab --password $PYMOOSE_PYPI_PASSWORD \
+$PY38 -m twine upload dist/pymoose*.tar.gz \
+  --user dilawar --password $PYMOOSE_PYPI_PASSWORD \
   --skip-existing || echo "Failed to upload source distribution."
