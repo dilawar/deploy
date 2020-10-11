@@ -20,7 +20,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MOOSE_SOURCE_DIR=`pwd`/moose-core
 
 if [ ! -d $MOOSE_SOURCE_DIR ]; then
-    git clone https://github.com/dilawar/moose-core -b $BRANCH --depth 10
+    git clone https://github.com/BhallaLab/moose-core -b $BRANCH --depth 10
 fi
 cd moose-core && git pull
 
