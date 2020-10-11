@@ -53,8 +53,8 @@ fi
 GSL_STATIC_LIBS="/usr/local/lib/libgsl.a;/usr/local/lib/libgslcblas.a"
 
 # Build wheels here.
-PY27=$(ls /opt/python/cp27-cp27m/bin/python?.?)
-PY35=$(ls /opt/python/cp35-cp35m/bin/python?.?)
+#PY27=$(ls /opt/python/cp27-cp27m/bin/python?.?)
+#PY35=$(ls /opt/python/cp35-cp35m/bin/python?.?)
 PY36=$(ls /opt/python/cp36-cp36m/bin/python?.?)
 PY37=$(ls /opt/python/cp37-cp37m/bin/python?.?)
 PY38=$(ls /opt/python/cp38-cp38/bin/python?.?)
@@ -63,19 +63,12 @@ PY38=$(ls /opt/python/cp38-cp38/bin/python?.?)
 $PY38 -m pip install cmake --user
 export PATH=/opt/python/cp38-cp38/bin:$PATH
 
-for PYTHON in $PY38 $PY37 $PY36 $PY35 $PY27; do
+for PYTHON in $PY38 $PY37 $PY36; do
   echo "========= Building using $PYTHON ..."
   $PYTHON -m pip install pip setuptools --upgrade
-  if [[ "$PYV" -eq "27" ]]; then
-    $PYTHON -m pip install numpy==1.15
-    $PYTHON -m pip install matplotlib==2.2.3
-  else
-    $PYTHON -m pip install numpy twine
-    $PYTHON -m pip install matplotlib
-  fi
-
+  $PYTHON -m pip install numpy twine
+  $PYTHON -m pip install matplotlib
   $PYTHON -m pip install twine
-
   # Removing existing pymoose if any.
   $PYTHON -m pip uninstall pymoose -y || echo "No pymoose"
 
