@@ -41,6 +41,10 @@ if [ ! -f /usr/local/lib/libgsl.a ]; then
     cd gsl-2.4 
     CFLAGS=-fPIC ./configure --enable-static && make $MAKEOPTS
     make install 
+
+    # GSL will be linked statically.
+    GSL_STATIC_LIBS="/usr/local/lib/libgsl.a;/usr/local/lib/libgslcblas.a"
+
     cd ..
 fi 
 
@@ -50,8 +54,6 @@ if [ ! -d $MOOSE_SOURCE_DIR ]; then
     git clone https://github.com/dilawar/moose-core --depth 10 --branch $BRANCH
 fi
 
-# GSL will be linked statically.
-GSL_STATIC_LIBS="/usr/local/lib/libgsl.a;/usr/local/lib/libgslcblas.a"
 
 PY2=/opt/python/cp27-cp27m/bin/python2.7
 $PY2 -m pip install numpy==1.14 matplotlib==2.2.4
