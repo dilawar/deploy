@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/BhallaLab/deploy.svg?branch=master)](https://travis-ci.org/BhallaLab/deploy)
+[![Build
+Status](https://travis-ci.org/dilawar/pymoose-deploy.svg?branch=master)](https://travis-ci.org/dilawar/pymoose-deploy)
 
 This repository contains all scripts required to build and release pymoose.
 
