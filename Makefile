@@ -1,14 +1,14 @@
-VERSION:=$(shell cat ./VERSION)
-
 all : wheels
 
-DOCKERFILE:="bhallalab/pymoose_wheels_$(USER):$(VERSION)"
+DOCKERFILE:="bhallalab/manylinux-moose:latest"
 
 wheels : ./Dockerfile ./build_wheels_linux.sh 
 	mkdir -p $(HOME)/wheelhouse
-	docker build \
-	    -t $(DOCKERFILE) \
-	    --build-arg PYMOOSE_PYPI_PASSWORD=$(PYMOOSE_PYPI_PASSWORD) . 
+	docker build -t $(DOCKERFILE) \
+	    --build-arg PYPI_PASSWORD=$(PYPI_PASSWORD) . 
 
-run:
-	docker run -it $(DOCKERFILE) /bin/bash
+run : ./Dockerfile
+	docker run -it $(DOCKERFILE) bash
+
+upload: 
+	docker push $(DOCKERFILE)
