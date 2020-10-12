@@ -95,6 +95,9 @@ $PY38 -m pip install twine auditwheel
 
 # List all wheels.
 ls -lh $WHEELHOUSE/*.whl
+$PY38 -m twine upload $WHEELHOUSE/*.whl \
+    --user dilawar --password $PYMOOSE_PYPI_PASSWORD \
+    --skip-existing 
 
 # now check the wheels.
 for whl in $WHEELHOUSE/pymoose*.whl; do
