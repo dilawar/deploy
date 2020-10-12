@@ -105,15 +105,14 @@ done
 
 echo "Installing before testing ... "
 $PY38 -m pip install $WHEELHOUSE/pymoose-$VERSION-py3-none-any.whl
-
-for PY in $PY38; do
-    $PY -c 'import moose; print(moose.__version__)'
-done
+$PY38 -c 'import moose; print(moose.__version__)'
 
 # Now upload the source distribution.
+set -e
 cd $MOOSE_SOURCE_DIR 
-rm -rf dist
-$PY38 setup.py sdist 
-$PY38 -m twine upload dist/pymoose*.tar.gz \
-  --user dilawar --password $PYMOOSE_PYPI_PASSWORD \
-  --skip-existing || echo "Failed to upload source distribution."
+rm -rf dist && \
+    $PY38 setup.py sdist && \
+    $PY38 -m twine upload dist/pymoose*.tar.gz \
+        --user dilawar --password $PYMOOSE_PYPI_PASSWORD \
+        --skip-existing || echo "Failed to upload source distribution."
+set +e
