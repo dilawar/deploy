@@ -64,6 +64,8 @@ PY38=$(ls /opt/python/cp38-cp38/bin/python?.?)
 
 # install latest cmake using pip and its location to PATH
 $PY38 -m pip install cmake --user
+$PY38 -m pip install twine auditwheel
+
 export PATH=/opt/python/cp38-cp38/bin:/root/.local/bin:$PATH
 
 for PYTHON in $PY38 $PY37 $PY36; do
@@ -81,17 +83,14 @@ for PYTHON in $PY38 $PY37 $PY36; do
   $PYTHON setup.py bdist_wheel --skip-build 
   ( 
       echo "Install and test this wheel"
-      # NOTE: Not sure why I have to do this. But cant install wheel from build
-      # directory.
+      auditwheel repair $MOOSE_SOURCE_DIR/dist/*.whl -w $WHEELHOUSE/
+      $PYTHON -m pip install $MOOSE_SOURCE_DIR/dist/*.whl  || echo "Failed to install"
       cd /tmp
-      $PYTHON -m pip install $MOOSE_SOURCE_DIR/dist/*.whl 
       $PYTHON $TESTFILE
-      mv $MOOSE_SOURCE_DIR/dist/*.whl $WHEELHOUSE
       rm -rf $MOOSE_SOURCE_DIR/dist/*.whl
   )
 done
 
-$PY38 -m pip install twine auditwheel
 
 # List all wheels.
 ls -lh $WHEELHOUSE/*.whl
