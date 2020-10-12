@@ -1,7 +1,7 @@
 FROM quay.io/pypa/manylinux2010_x86_64
 MAINTAINER Dilawar Singh <dilawar.s.rajput@gmail.com>
 
-ARG PYPI_PASSWORD
+ARG PYMOOSE_PYPI_PASSWORD
 
 RUN yum install -y cmake3 git tree && rm -rf /var/cache/yum/*
 
