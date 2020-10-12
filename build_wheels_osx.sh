@@ -6,8 +6,6 @@ BRANCH=$(cat ./BRANCH)
 
 # Just to be sure on homebrew.
 export PATH=/usr/local/bin:$PATH
-
-brew update || echo "Failed to update brew"
 brew install gsl  || brew upgrade gsl 
 brew install python@3 || echo "Failed to install python3"
 
