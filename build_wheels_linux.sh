@@ -20,7 +20,6 @@ mkdir -p $WHEELHOUSE
 # tag on github and revision number. Make sure that they are there.
 [ -f ./BRANCH ] || echo "master" > ./BRANCH
 BRANCH=$(cat ./BRANCH)
-VERSION="3.2dev$(date +%Y%m%d)"
 
 # Create a test script and upload.
 TESTFILE=/tmp/test.py
@@ -31,9 +30,6 @@ print( moose.__version__ )
 moose.reinit()
 moose.start( 1 )
 EOF
-
-
-echo "Building version $VERSION, from branch $BRANCH"
 
 if [ ! -f /usr/local/lib/libgsl.a ]; then 
     curl -O https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz
@@ -97,17 +93,6 @@ ls -lh $WHEELHOUSE/*.whl
 $PY38 -m twine upload $WHEELHOUSE/*.whl \
     --user __token__ --password $PYMOOSE_PYPI_PASSWORD \
     --skip-existing 
-
-# now check the wheels.
-for whl in $WHEELHOUSE/pymoose*.whl; do
-    auditwheel show "$whl"
-    # Fix the tag and remove the old wheel.
-    auditwheel repair "$whl" -w $WHEELHOUSE && rm -f "$whl"
-done
-
-echo "Installing before testing ... "
-$PY38 -m pip install $WHEELHOUSE/pymoose-$VERSION-py3-none-any.whl
-$PY38 -c 'import moose; print(moose.__version__)'
 
 # Now upload the source distribution.
 set -e
