@@ -58,6 +58,6 @@ PLATFORM=$($PYTHON -c "import distutils.util; print(distutils.util.get_platform(
 
 if [ ! -z "$PYMOOSE_PYPI_PASSWORD" ]; then
     echo "Did you test the wheels? I am uploading anyway ..."
-    $PYTHON -m twine upload -u bhallalab -p $PYMOOSE_PYPI_PASSWORD \
+    $PYTHON -m twine upload -u __token__ -p $PYMOOSE_PYPI_PASSWORD \
         $WHEELHOUSE/pymoose*.whl || echo "Failed to upload to PyPi"
 fi

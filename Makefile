@@ -1,6 +1,6 @@
 all : wheels
 
-DOCKERFILE:="bhallalab/manylinux-moose:latest"
+DOCKERFILE:="dilawars/pymoose-manylinux2010:latest"
 
 wheels : ./Dockerfile ./build_wheels_linux.sh 
 	mkdir -p $(HOME)/wheelhouse
