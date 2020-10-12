@@ -96,7 +96,7 @@ $PY38 -m pip install twine auditwheel
 # List all wheels.
 ls -lh $WHEELHOUSE/*.whl
 $PY38 -m twine upload $WHEELHOUSE/*.whl \
-    --user dilawar --password $PYMOOSE_PYPI_PASSWORD \
+    --user __token__ --password $PYMOOSE_PYPI_PASSWORD \
     --skip-existing 
 
 # now check the wheels.
@@ -116,5 +116,5 @@ cd $MOOSE_SOURCE_DIR
 rm -rf dist && \
     $PY38 setup.py sdist && \
     $PY38 -m twine upload dist/pymoose*.tar.gz \
-        --user dilawar --password $PYMOOSE_PYPI_PASSWORD \
+        --user __token__ --password $PYMOOSE_PYPI_PASSWORD \
         --skip-existing || echo "Failed to upload source distribution."
