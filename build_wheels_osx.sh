@@ -20,15 +20,13 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MOOSE_SOURCE_DIR=`pwd`/moose-core
 
 if [ ! -d $MOOSE_SOURCE_DIR ]; then
-    git clone https://github.com/BhallaLab/moose-core -b $BRANCH --depth 10
+    git clone https://github.com/dilawar/moose-core -b $BRANCH --depth 10
 fi
 cd moose-core && git pull
 
 WHEELHOUSE=$HOME/wheelhouse
 rm -rf $WHEELHOUSE && mkdir -p $WHEELHOUSE
 
-# Current version 0.7.4 seems to be broken with python3.7 .
-# See https://travis-ci.org/BhallaLab/deploy/jobs/435219820
 /usr/local/bin/python3 -m pip install delocate 
 DELOCATE_WHEEL=/usr/local/bin/delocate-wheel
 
