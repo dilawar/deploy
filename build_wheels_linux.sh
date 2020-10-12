@@ -64,7 +64,7 @@ PY38=$(ls /opt/python/cp38-cp38/bin/python?.?)
 
 # install latest cmake using pip and its location to PATH
 $PY38 -m pip install cmake --user
-export PATH=/opt/python/cp38-cp38/bin:$PATH
+export PATH=/opt/python/cp38-cp38/bin:/root/.local/bin:$PATH
 
 for PYTHON in $PY38 $PY37 $PY36; do
   echo "========= Building using $PYTHON ..."
@@ -118,4 +118,3 @@ rm -rf dist && \
     $PY38 -m twine upload dist/pymoose*.tar.gz \
         --user dilawar --password $PYMOOSE_PYPI_PASSWORD \
         --skip-existing || echo "Failed to upload source distribution."
-set +e
